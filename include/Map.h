@@ -23,6 +23,8 @@
 
 #include "MapPoint.h"
 #include "KeyFrame.h"
+#include "Converter.h"
+
 #include <set>
 
 #include <mutex>
@@ -47,6 +49,8 @@ public:
     void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);
     void InformNewBigChange();
     int GetLastBigChangeIdx();
+    //保存地图信息
+    void Save(const string &filename);
 
     std::vector<KeyFrame*> GetAllKeyFrames();
     std::vector<MapPoint*> GetAllMapPoints();
@@ -78,6 +82,14 @@ protected:
     int mnBigChangeIdx;
 
     std::mutex mMutexMap;
+
+    std::map<MapPoint*,unsigned long int> mmpnMapPointsIdx;
+
+    //保存地图点和关键帧
+    void SaveMapPoint(ofstream &f,MapPoint* mp);
+    void SaveKeyFrame(ofstream &f,KeyFrame* kf);
+    void GetMapPointsIdx();
+
 };
 
 } //namespace ORB_SLAM

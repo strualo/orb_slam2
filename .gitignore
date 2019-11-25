@@ -2,3 +2,5 @@
 KeyFrameTrajectory.txt
 /Examples/ROS/ORB_SLAM2/build
 /Vocabulary/ORBvoc.txt
+/KeyFrame_Saved
+/map_saved

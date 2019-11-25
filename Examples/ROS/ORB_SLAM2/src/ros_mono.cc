@@ -16,7 +16,10 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
-*/
+
+ https://blog.csdn.net/u014709760/article/details/86319090
+
+ */
 
 
 #include<iostream>
@@ -43,43 +46,6 @@ public:
     ORB_SLAM2::System* mpSLAM;
 };
 
-int main(int argc, char **argv)
-{
-    ros::init(argc, argv, "Mono");
-    ros::start();
-
-//    if(argc != 3)
-//    {
-//        cerr << endl << "Usage: rosrun ORB_SLAM2 Mono path_to_vocabulary path_to_settings" << endl;
-//        ros::shutdown();
-//        return 1;
-//    }
-
-    // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM("/home/slamer/orb_slam2/Vocabulary/ORBvoc.txt","/home/slamer/orb_slam2/Examples/ROS/ORB_SLAM2/Asus.yaml",
-                                  ORB_SLAM2::System::MONOCULAR,true);
-
-    ImageGrabber igb(&SLAM);
-
-    ros::NodeHandle nodeHandler;
-    ros::Subscriber sub = nodeHandler.subscribe("/camera/color/image_raw", 1, &ImageGrabber::GrabImage,&igb);
-
-    ros::spin();
-
-    // Save map
-    SLAM.SaveMap("Slam_latest_Map.bin");
-    // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
-    // Stop all threads
-    SLAM.Shutdown();
-
-    
-
-    ros::shutdown();
-
-    return 0;
-}
-
 void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 {
     // Copy the ros image message to cv::Mat.
@@ -96,5 +62,44 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 
     mpSLAM->TrackMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
 }
+
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "Mono");
+    ros::start();
+
+//    if(argc != 3)
+//    {
+//        cerr << endl << "Usage: rosrun ORB_SLAM2 Mono path_to_vocabulary path_to_settings" << endl;
+//        ros::shutdown();
+//        return 1;
+//    }
+
+    // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    ORB_SLAM2::System SLAM("/home/slamer/orb_slam2/Vocabulary/ORBvoc.txt","/home/slamer/orb_slam2/Examples/ROS/ORB_SLAM2/Asus.yaml",
+                                  ORB_SLAM2::System::MONOCULAR,true);
+
+    ImageGrabber rgb(&SLAM);
+
+    ros::NodeHandle nodeHandler;
+    ros::Subscriber sub = nodeHandler.subscribe("/camera/color/image_raw", 1, &ImageGrabber::GrabImage,&rgb);
+
+    ros::spin();
+
+    // Save map
+    SLAM.SaveMap("./map_saved/map.bin");
+    // Save camera trajectory
+    SLAM.SaveKeyFrameTrajectoryTUM("./KeyFrame_Saved/KeyFrameTrajectory.txt");
+    // Stop all threads
+    SLAM.Shutdown();
+
+
+    ros::shutdown();
+
+    return 0;
+}
+
+
 
 
